@@ -2,12 +2,13 @@ package uz.developers.map.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uz.developers.jpa_relationships_tasks.task1.model.Mark;
-import uz.developers.jpa_relationships_tasks.task1.payload.MarkDto;
-import uz.developers.jpa_relationships_tasks.task1.repository.MarkRepository;
-import uz.developers.jpa_relationships_tasks.task2.entity.Country;
-import uz.developers.jpa_relationships_tasks.task2.payload.CountryDto;
-import uz.developers.jpa_relationships_tasks.task2.repository.CountryRepository;
+import uz.developers.map.entity.Addresss;
+import uz.developers.map.entity.Country;
+import uz.developers.map.payload.AddressDto;
+import uz.developers.map.payload.CountryDto;
+import uz.developers.map.payload.Result;
+import uz.developers.map.service.AddressService;
+import uz.developers.map.service.CountryService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,37 +18,30 @@ import java.util.Optional;
 public class CountryController {
 
     @Autowired
-    CountryRepository countryRepository;
-
+    CountryService countryService;
 
     @GetMapping
     public List<Country> getCountries(){
-        List<Country> countryList = countryRepository.findAll();
-        return countryList;
+        return countryService.getCountries();
+    }
+    @GetMapping("/{id}")
+    public Country getCountry(@PathVariable Integer id){
+        return countryService.getCountry(id);
     }
 
     @PostMapping
-    public String addCountry(@RequestBody CountryDto countryDto){
-        Country country = new Country();
-        country.setName(countryDto.getName());
-        countryRepository.save(country);
-        return "Country is added";
+    public Result addCountry(@RequestBody CountryDto countryDto){
+        return countryService.addCountry(countryDto);
     }
 
     @PutMapping("/{id}")
-    public String editCountry(@PathVariable Integer id,@RequestBody CountryDto countryDto){
-        Optional<Country> optionalCountry = countryRepository.findById(id);
-        if (optionalCountry.isPresent()) {
-            Country country = optionalCountry.get();
-            country.setName(countryDto.getName());
-            countryRepository.save(country);
-            return "Country is edited";
-        }
-        return "Country not found";
+    public Result editCountry(@PathVariable Integer id, @RequestBody CountryDto countryDto){
+        return countryService.editCountry(id,countryDto);
     }
+
     @DeleteMapping("/{id}")
-    public String deleteCountry(@PathVariable Integer id){
-        countryRepository.deleteById(id);
-        return "Country is deleted";
+    public Result deleteCountry(@PathVariable Integer id){
+        return countryService.deleteCountry(id);
     }
+
 }

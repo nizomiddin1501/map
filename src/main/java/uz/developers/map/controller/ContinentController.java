@@ -2,12 +2,13 @@ package uz.developers.map.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uz.developers.jpa_relationships_tasks.task1.model.Mark;
-import uz.developers.jpa_relationships_tasks.task1.payload.MarkDto;
-import uz.developers.jpa_relationships_tasks.task1.repository.MarkRepository;
-import uz.developers.jpa_relationships_tasks.task2.entity.Continent;
-import uz.developers.jpa_relationships_tasks.task2.payload.ContinentDto;
-import uz.developers.jpa_relationships_tasks.task2.repository.ContinentRepository;
+import uz.developers.map.entity.Addresss;
+import uz.developers.map.entity.Continent;
+import uz.developers.map.payload.AddressDto;
+import uz.developers.map.payload.ContinentDto;
+import uz.developers.map.payload.Result;
+import uz.developers.map.service.AddressService;
+import uz.developers.map.service.ContinentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,37 +19,30 @@ public class ContinentController {
 
 
     @Autowired
-    ContinentRepository continentRepository;
-
+    ContinentService continentService;
 
     @GetMapping
     public List<Continent> getContinents(){
-        List<Continent> continents = continentRepository.findAll();
-        return continents;
+        return continentService.getContinents();
+    }
+    @GetMapping("/{id}")
+    public Continent getContinent(@PathVariable Integer id){
+        return continentService.getContinent(id);
     }
 
     @PostMapping
-    public String addMark(@RequestBody ContinentDto continentDto){
-        Continent continent = new Continent();
-        continent.setName(continentDto.getName());
-        continentRepository.save(continent);
-        return "Continent is added";
+    public Result addContinent(@RequestBody ContinentDto continentDto){
+        return continentService.addContinent(continentDto);
     }
 
     @PutMapping("/{id}")
-    public String editContinent(@PathVariable Integer id,@RequestBody ContinentDto continentDto){
-        Optional<Continent> optionalContinent = continentRepository.findById(id);
-        if (optionalContinent.isPresent()) {
-            Continent continent = optionalContinent.get();
-            continent.setName(continentDto.getName());
-            continentRepository.save(continent);
-            return "Continent is edited";
-        }
-        return "Continent not found";
+    public Result editContinent(@PathVariable Integer id, @RequestBody ContinentDto continentDto){
+        return continentService.editContinent(id,continentDto);
     }
+
     @DeleteMapping("/{id}")
-    public String deleteContinent(@PathVariable Integer id){
-        continentRepository.deleteById(id);
-        return "Continent is deleted";
+    public Result deleteContinent(@PathVariable Integer id){
+        return continentService.deleteContinent(id);
     }
+
 }

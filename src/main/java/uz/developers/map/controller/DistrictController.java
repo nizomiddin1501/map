@@ -2,12 +2,13 @@ package uz.developers.map.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uz.developers.jpa_relationships_tasks.task1.model.Mark;
-import uz.developers.jpa_relationships_tasks.task1.payload.MarkDto;
-import uz.developers.jpa_relationships_tasks.task1.repository.MarkRepository;
-import uz.developers.jpa_relationships_tasks.task2.entity.District;
-import uz.developers.jpa_relationships_tasks.task2.payload.DistrictDto;
-import uz.developers.jpa_relationships_tasks.task2.repository.DistrictRepository;
+import uz.developers.map.entity.Country;
+import uz.developers.map.entity.District;
+import uz.developers.map.payload.CountryDto;
+import uz.developers.map.payload.DistrictDto;
+import uz.developers.map.payload.Result;
+import uz.developers.map.service.CountryService;
+import uz.developers.map.service.DistrictService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,38 +18,30 @@ import java.util.Optional;
 public class DistrictController {
 
     @Autowired
-    DistrictRepository districtRepository;
-
+    DistrictService districtService;
 
     @GetMapping
     public List<District> getDistricts(){
-        List<District> districts = districtRepository.findAll();
-        return districts;
+        return districtService.getDistricts();
+    }
+    @GetMapping("/{id}")
+    public District getDistrict(@PathVariable Integer id){
+        return districtService.getDistrict(id);
     }
 
     @PostMapping
-    public String addDistrict(@RequestBody DistrictDto districtDto){
-        District district = new District();
-        district.setName(districtDto.getName());
-        districtRepository.save(district);
-        return "District is added";
+    public Result addDistrict(@RequestBody DistrictDto districtDto){
+        return districtService.addDistrict(districtDto);
     }
 
     @PutMapping("/{id}")
-    public String editDistrict(@PathVariable Integer id,@RequestBody DistrictDto districtDto){
-        Optional<District> optionalDistrict = districtRepository.findById(id);
-        if (optionalDistrict.isPresent()) {
-            District district = optionalDistrict.get();
-            district.setName(districtDto.getName());
-            districtRepository.save(district);
-            return "District is edited";
-        }
-        return "District not found";
+    public Result editDistrict(@PathVariable Integer id, @RequestBody DistrictDto districtDto){
+        return districtService.editDistrict(id,districtDto);
     }
+
     @DeleteMapping("/{id}")
-    public String deleteDistrict(@PathVariable Integer id){
-        districtRepository.deleteById(id);
-        return "District is deleted";
+    public Result deleteDistrict(@PathVariable Integer id){
+        return districtService.deleteDistrict(id);
     }
 
 }
